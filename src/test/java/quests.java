@@ -95,4 +95,60 @@ public class quests extends base{
         Assert.assertFalse(isAlertPresent());
 
     }
+    @Test
+    public void digestAuthentication(){
+        HasAuthentication authentication = (HasAuthentication) driver;
+        authentication.register(()-> new UsernameAndPassword("admin", "admin"));
+        goToPage("Digest Authentication");
+        Assert.assertTrue(driver.findElement(By.xpath("//p")).getText().contains("Congratulations! You must have the proper credentials."));
+    }
+    @Test
+    public void disappearingElements(){
+        goToPage("Disappearing Elements");
+        for (int i = 0; i < 5; i++){
+            try {
+                driver.findElement(By.xpath("//a[text()='Gallery']")).click();
+                break;
+            } catch ( Exception e) {
+                System.out.println("Gallery was not visible. Let's refresh site.");
+                driver.navigate().refresh();
+            }
+        }
+        Assert.assertTrue(driver.getCurrentUrl().equals("http://the-internet.herokuapp.com/gallery/"));
+    }
+    @Test
+    public void dragAndDrop(){
+        goToPage("Drag and Drop");
+        Actions actions = new Actions(driver);
+        actions.dragAndDrop(driver.findElement(By.id("column-a")), driver.findElement(By.id("column-b"))).perform();
+        Assert.assertTrue(driver.findElement(By.id("column-a")).getText().equals("B"));
+        Assert.assertTrue(driver.findElement(By.id("column-b")).getText().equals("A"));
+    }
+    @Test
+    public void dropDown(){
+        goToPage("Dropdown");
+        String chosenOption = "Option 2";
+        driver.findElement(By.id("dropdown")).sendKeys(chosenOption);
+        Assert.assertTrue(!driver.findElement(By.xpath("//select/option[@value='2']")).getAttribute("selected").isEmpty());
+    }
+    @Test
+    public void dynamicContent(){
+        goToPage("Dynamic Content");
+        int tryAmount = 5;
+        List<WebElement> images = driver.findElements(By.tagName("img"));
+        for (int i = 0; i < tryAmount; i++){
+            System.out.println(images.get(3).getAttribute("src"));
+            if (images.get(3).getAttribute("src").toString().endsWith("/img/avatars/Original-Facebook-Geek-Profile-Avatar-7.jpg")){
+                System.out.println("Female joker appeared in 3rd picture.");
+                break;
+            } else {
+                System.out.println("Looking for joker picture, driver will click button");
+                driver.findElement(By.xpath("//p//a[text()='click here']")).click();
+                images = driver.findElements(By.tagName("img"));
+            }
+            if (i == (tryAmount-1)){
+                System.out.println("Joker escaped.");
+            }
+        }
+    }
 }
