@@ -8,6 +8,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class quests extends base {
     @Test
@@ -231,5 +232,24 @@ public class quests extends base {
         enableButton = driver.findElement(By.xpath(xpathButton));
         waitForElemntToBeClickable(driver, enableButton);
         Assert.assertFalse(fillableField.isEnabled());
+    }
+    @Test
+    public void dynamicallyLoadedPageElements1st(){
+        goToPage("Dynamic Loading");
+        driver.findElement(By.xpath("//a[text()='Example 1: Element on page that is hidden']")).click();
+        driver.findElement(By.xpath("//button[text()='Start']")).click();
+        WebElement hiddenText = driver.findElement(By.xpath("//div[@id='finish']//h4"));
+        waitForElementToExist(driver, hiddenText);
+        Assert.assertTrue(hiddenText.getText().equals("Hello World!"));
+    }
+    @Test
+    public void dynamicallyLoadedPageElements2nd() throws InterruptedException {
+        goToPage("Dynamic Loading");
+        driver.findElement(By.xpath("//a[text()='Example 2: Element rendered after the fact']")).click();
+        driver.findElement(By.xpath("//button[text()='Start']")).click();
+        TimeUnit.SECONDS.sleep(4);
+        WebElement hiddenText = driver.findElement(By.xpath("//div[@id='finish']//h4"));
+        waitForElementToExist(driver, hiddenText);
+        Assert.assertTrue(hiddenText.getText().equals("Hello World!"));
     }
 }
