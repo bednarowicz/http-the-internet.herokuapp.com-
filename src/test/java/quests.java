@@ -5,7 +5,10 @@ import org.junit.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.awt.*;
+import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -13,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class quests extends base {
     @Test
     public void ABTask() {
-        Actions actions = new Actions(driver);
+        //Actions actions = new Actions(driver);
         goToPage("A/B Testing");
         String stringAdresOtwartejStrony = driver.getCurrentUrl();
         String tekstNaStronie = driver.findElement(By.xpath("//p")).getText();
@@ -251,5 +254,35 @@ public class quests extends base {
         WebElement hiddenText = driver.findElement(By.xpath("//div[@id='finish']//h4"));
         waitForElementToExist(driver, hiddenText);
         Assert.assertTrue(hiddenText.getText().equals("Hello World!"));
+    }
+    @Test
+    public void entryAdd(){      //Does not work
+        goToPage("Entry Ad");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebElement clickable = wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.xpath("//div[@class='modal-footer']")))); //(By.className("modal")); //p[text()='Close']
+        Assert.assertTrue(driver.findElement(By.id("modal")).getAttribute("style").contains("block"));
+        JavascriptExecutor js= (JavascriptExecutor) driver;
+        js.executeScript("arguments[0].click();", driver.findElement(By.xpath("//div[@class='modal-footer']"))); // for unkown to me reason only method with javascript worked; both method .click of WebElement & simulating clicking via actions did not work for me
+        Assert.assertTrue(driver.findElement(By.id("modal")).getAttribute("style").contains("none"));
+    }
+    @Test
+    public void exitIntent() throws InterruptedException, AWTException {
+        goToPage("Exit Intent");
+       // Actions actions = new Actions(driver);
+       // actions.moveToElement(driver.findElement(By.id("flash-messages"))).moveByOffset(0, -15).perform(); //actions did not make a trick, let's try robot
+        Robot robot = new Robot();
+        robot.mouseMove(20,0);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebElement clickable = wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.xpath("//div[@class='modal-footer']")))); //(By.className("modal")); //p[text()='Close']
+        Assert.assertTrue(driver.findElement(By.id("ouibounce-modal")).getAttribute("style").contains("block"));
+        JavascriptExecutor js= (JavascriptExecutor) driver;
+        js.executeScript("arguments[0].click();", driver.findElement(By.xpath("//div[@class='modal-footer']"))); // for unkown to me reason only method with javascript worked; both method .click of WebElement & simulating clicking via actions did not work for me
+        Assert.assertTrue(driver.findElement(By.id("ouibounce-modal")).getAttribute("style").contains("none"));
+
+    }
+
+    @Test
+    public void uploadFile() {
+
     }
 }
