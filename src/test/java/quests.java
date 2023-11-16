@@ -1,6 +1,7 @@
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.checkerframework.common.initializedfields.qual.EnsuresInitializedFields;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
@@ -283,6 +284,60 @@ public class quests extends base {
 
     @Test
     public void uploadFile() {
-
+        goToPage("File Upload");
+        driver.findElement(By.id("file-upload")).sendKeys("C:\\Users\\Rafi\\Desktop\\fryzjer.txt");
+        driver.findElement(By.id("file-submit")).click();
+        Assert.assertTrue(driver.findElement(By.id("uploaded-files")).getText().equals("fryzjer.txt"));
     }
+    @Test
+    public void floatingMenu(){
+        goToPage("Floating Menu");
+        driver.findElement(By.xpath("//a[@href='#home']")).click();
+        Assert.assertTrue(driver.getCurrentUrl().endsWith("#home"));
+        Actions actions = new Actions(driver);
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("window.scrollBy(0,2250)", "");
+        driver.findElement(By.xpath("//a[@href='#contact']")).click();
+        Assert.assertTrue(driver.getCurrentUrl().endsWith("#contact"));
+    }
+    @Test
+    public void loginPage(){
+        goToPage("Form Authentication");
+        driver.findElement(By.className("radius")).click();
+        Assert.assertTrue(driver.findElement(By.id("flash")).getText().contains("Your username is invalid!"));
+        driver.findElement(By.id("username")).sendKeys("tomsmith");
+        driver.findElement(By.className("radius")).click();
+        Assert.assertTrue(driver.findElement(By.id("flash")).getText().contains("Your password is invalid!"));
+        driver.findElement(By.id("username")).sendKeys("tomsmith");
+        driver.findElement(By.id("password")).sendKeys("SuperSecretPassword!");
+        driver.findElement(By.className("radius")).click();
+        Assert.assertTrue(driver.findElement(By.id("flash")).getText().contains("You logged into a secure area!"));
+    }
+    @Test
+    public void framesNestedFrame(){
+        goToPage("Frames");
+        driver.findElement(By.xpath("//a[text()='Nested Frames']")).click();
+        driver.switchTo().frame(driver.findElement(By.xpath("//frame[@name='frame-top']")))
+                .switchTo().frame(driver.findElement(By.xpath("//frame[@name='frame-middle']")));
+        Assert.assertTrue(driver.findElement(By.id("content")).getText().equals("MIDDLE"));
+    }
+    @Test @Ignore
+    public void frames2ndTask() throws InterruptedException { //does not work has to be corrected
+        goToPage("Frames");
+        driver.findElement(By.xpath("//a[text()='iFrame']")).click();
+        TimeUnit.SECONDS.sleep(2);
+        WebElement frame = driver.findElement(By.id("mce_0_ifr"));
+        driver.switchTo().frame(frame);
+
+
+        WebElement text = driver.findElement(By.id("tinymce"));
+        waitForElemntToBeClickable(driver, text);
+        text.sendKeys("First line.");
+        driver.switchTo().defaultContent();
+        driver.findElement(By.className("tox-tbtn")).click();
+        driver.switchTo().frame(frame);
+        text.sendKeys("Bolded text.");
+    }
+
+
 }
