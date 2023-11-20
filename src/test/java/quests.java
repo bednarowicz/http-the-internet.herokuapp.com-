@@ -321,22 +321,46 @@ public class quests extends base {
                 .switchTo().frame(driver.findElement(By.xpath("//frame[@name='frame-middle']")));
         Assert.assertTrue(driver.findElement(By.id("content")).getText().equals("MIDDLE"));
     }
-    @Test @Ignore
-    public void frames2ndTask() throws InterruptedException { //does not work has to be corrected
+    @Test
+    public void frames2ndTask() throws InterruptedException {
         goToPage("Frames");
         driver.findElement(By.xpath("//a[text()='iFrame']")).click();
-        TimeUnit.SECONDS.sleep(2);
-        WebElement frame = driver.findElement(By.id("mce_0_ifr"));
+        TimeUnit.SECONDS.sleep(1);
+        WebElement frame = driver.findElement(By.id("mce_0_ifr")); // saving frame for input of text
         driver.switchTo().frame(frame);
 
 
         WebElement text = driver.findElement(By.id("tinymce"));
         waitForElemntToBeClickable(driver, text);
+        text.clear();
         text.sendKeys("First line.");
-        driver.switchTo().defaultContent();
-        driver.findElement(By.className("tox-tbtn")).click();
+        driver.switchTo().defaultContent(); // returning to default frame to use bolded text
+        driver.findElement(By.xpath("//button[@class='tox-tbtn' and @title='Bold']")).click();
         driver.switchTo().frame(frame);
         text.sendKeys("Bolded text.");
+
+        driver.switchTo().defaultContent();
+        driver.findElement(By.xpath("//span[text()='Format']")).click();
+        driver.findElement(By.xpath("//div[@role='menu']//div[text()='Align']")).click();
+        driver.findElement(By.xpath("//div[@role='menu']//div[text()='Right']")).click();
+        driver.switchTo().frame(frame);
+        text.sendKeys("LastString");
+    }
+    @Test
+    public void horizontalSlider(){
+        goToPage("Horizontal Slider");
+        Actions actions = new Actions(driver);
+        actions.moveToElement(driver.findElement(By.xpath("//div[@class='sliderContainer']//input")))
+                .clickAndHold().keyDown(Keys.ARROW_RIGHT).keyUp(Keys.ARROW_RIGHT).keyDown(Keys.ARROW_RIGHT).keyUp(Keys.ARROW_RIGHT).perform(); // by default clicks on middle of range -> hence starts with value 2.5 and each right arrows increases value by 0.5 and each left arrow should decrease value by 0.5
+        Assert.assertTrue(driver.findElement(By.id("range")).getText().equals("3.5"));
+    }
+    @Test @Ignore
+    public void Inputs(){
+        goToPage("Inputs");
+        driver.findElement(By.xpath("//input[@type='number']")).sendKeys("14");
+        //Assert.assertTrue(driver.findElement(By.xpath("//input[@type='number']")).getText().equals("14"));
+        //there is no value visible in structure/buttons so with pure Selenium I am not able to get value of field and
+        //I would probably use Javascript or some library to deal with it
     }
 
 
